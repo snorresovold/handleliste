@@ -1,0 +1,6 @@
+.DS_Store
+/node_modules/
+.ENV
+# React Router
+/.react-router/
+/build/
