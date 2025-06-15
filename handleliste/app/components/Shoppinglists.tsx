@@ -47,15 +47,12 @@ function Shoppinglists({ id, title, onDelete }: Props) {
   async function handleAddItem() {
     if (!newItemName.trim()) return;
     const itemID = crypto.randomUUID();
-    const docRef = await setDoc(
-      doc(collection(db, "shoppinglists", id, "items", itemID)),
-      {
-        name: newItemName,
-        checked: false,
-        creator: user!.uid,
-        created_at: new Date(),
-      }
-    );
+    await setDoc(doc(db, "shoppinglists", id, "items", itemID), {
+      name: newItemName,
+      checked: false,
+      creator: user!.uid,
+      created_at: new Date(),
+    });
 
     setItems((prev) => [
       ...prev,
@@ -80,24 +77,36 @@ function Shoppinglists({ id, title, onDelete }: Props) {
       )
     );
   }
-
+  async function handleDelete(itemId: string) {
+    await deleteDoc(doc(db, "shoppinglists", id, "items", itemId));
+    setItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
+  }
   return (
     <div className="space-y-2">
       <p className="font-semibold">{title}</p>
-
       {items.map((item) => (
-        <div key={item.id} className="flex justify-between items-center">
-          <span>{item.name}</span>
-          <input
-            type="checkbox"
-            checked={item.checked}
-            onChange={(e) => handleToggleChecked(item.id, e.target.checked)}
-            className="form-checkbox h-5 w-5 text-blue-600"
-          />
+        <div
+          key={item.id}
+          className="flex justify-between items-center space-x-4"
+        >
+          <span className="flex-1">{item.name}</span>
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={item.checked}
+              onChange={(e) => handleToggleChecked(item.id, e.target.checked)}
+              className="form-checkbox h-5 w-5 text-blue-600"
+            />
+            <button
+              onClick={() => handleDelete(item.id)}
+              className="text-red-500 hover:text-red-700 font-bold"
+            >
+              X
+            </button>
+          </div>
         </div>
       ))}
 
-      {/* Input for new item */}
       <div className="flex gap-2 mt-2">
         <input
           type="text"

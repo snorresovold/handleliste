@@ -32,10 +32,8 @@ function Registration() {
         createdAt: new Date().toISOString(),
       });
 
-      console.log("User created:", user.email);
       navigate("/");
     } catch (error: any) {
-      console.error("Registration error:", error);
       alert(error.message || "Registration failed.");
     }
   };

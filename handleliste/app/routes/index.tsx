@@ -41,11 +41,17 @@ function Index() {
   }
 
   if (loading) {
-    return <div>Loading...</div>; // or your loader component
+    return <div>Loading...</div>;
   }
 
   if (!user) {
-    return <div>Please log in to see your shopping lists.</div>;
+    return (
+      <div>
+        Logg inn for å se handlelistene dine.{" "}
+        <NavLink to="/login">Logg inn</NavLink>{" "}
+        <NavLink to="/register">Registrer deg</NavLink>
+      </div>
+    );
   }
 
   return (

@@ -12,6 +12,7 @@ import { getAuth } from "firebase/auth";
 import type { Item, ShoppingList } from "~/Interfaces";
 import type { Route } from "./+types";
 import { useAuth } from "~/hooks/useAuth";
+import { NavLink } from "react-router";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -39,12 +40,11 @@ export default function Home() {
   const [sharedInput, setSharedInput] = useState("");
   const [showSharedWith, setShowSharedWith] = useState(true);
   const [itemName, setItemName] = useState("");
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
 
   async function handleCreateList() {
     if (titleInput.trim() === "") return;
 
-    const auth = getAuth();
     if (!user) return;
 
     const sharedWithIDs = await handleEmailToID(sharedWith);
@@ -103,6 +103,20 @@ export default function Home() {
     });
 
     setItemName("");
+  }
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!user) {
+    return (
+      <div>
+        Logg inn for å se handlelistene dine.{" "}
+        <NavLink to="/login">Logg inn</NavLink>{" "}
+        <NavLink to="/register">Registrer deg</NavLink>
+      </div>
+    );
   }
 
   return (
