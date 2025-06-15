@@ -1,10 +1,17 @@
 import { useState } from "react";
-import type { Route } from "./+types/home";
-import { doc, setDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  setDoc,
+  where,
+} from "firebase/firestore";
 import { db } from "FirebaseConfig";
 import { getAuth } from "firebase/auth";
-import firebase from "firebase/compat/app";
-import { randomUUID } from "crypto";
+import type { Item, ShoppingList } from "~/Interfaces";
+import type { Route } from "./+types";
+import { useAuth } from "~/hooks/useAuth";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -13,64 +20,88 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export interface ShoppingList {
-  id: string;
-  title: string;
-  created_at: string;
-  items: Item[];
-}
+// Dummy implementation — replace with real email-to-UID logic later
+async function handleEmailToID(emails: string[]): Promise<string[]> {
+  let IDs: string[] = [];
+  for (const email of emails) {
+    const q = query(collection(db, "users"), where("email", "==", email));
+    const querySnapshot = await getDocs(q);
+    IDs.push(querySnapshot.docs[0]?.id);
+  }
 
-export interface Item {
-  id: string;
-  name: string;
-  checked: boolean;
+  return IDs;
 }
 
 export default function Home() {
   const [list, setList] = useState<ShoppingList>();
-  const [titleInput, setTitleInput] = useState<string>("");
-
-  // Item input states
-  const [itemName, setItemName] = useState<string>("");
+  const [titleInput, setTitleInput] = useState("");
+  const [sharedWith, setSharedWith] = useState<string[]>([]);
+  const [sharedInput, setSharedInput] = useState("");
+  const [showSharedWith, setShowSharedWith] = useState(true);
+  const [itemName, setItemName] = useState("");
+  const { user } = useAuth();
 
   async function handleCreateList() {
     if (titleInput.trim() === "") return;
 
     const auth = getAuth();
+    if (!user) return;
 
-    const newList: ShoppingList = {
-      id: randomUUID(),
+    const sharedWithIDs = await handleEmailToID(sharedWith);
+
+    const listId = crypto.randomUUID();
+    const createdAt = new Date();
+
+    await setDoc(doc(db, "shoppinglists", listId), {
       title: titleInput.trim(),
-      created_at: new Date().toISOString(),
-      items: [],
-    };
-
-    const user = auth.currentUser;
-    await setDoc(doc(db, "shoppinglists", newList.id.toString()), {
-      title: newList.title,
-      createdAt: new Date().toISOString(),
-      creator: user!.uid,
+      createdAt,
+      creator: user.uid,
+      sharedWith: sharedWithIDs,
     });
 
-    setList(newList);
+    setList({
+      id: listId,
+      title: titleInput.trim(),
+      created_at: createdAt,
+      creator: user.uid,
+      sharedWith: sharedWithIDs,
+      items: [],
+    });
+
     setTitleInput("");
+    setShowSharedWith(false);
+    setSharedInput("");
+    setSharedWith([]);
   }
 
-  function handleAddItem() {
+  async function handleAddItem(listId: string) {
     if (!list || itemName.trim() === "") return;
 
-    const newItem: Item = {
-      id: randomUUID(),
+    const itemId = crypto.randomUUID();
+    const createdAt = new Date();
+    const user = getAuth().currentUser;
+    if (!user) return;
+
+    await setDoc(doc(db, "shoppinglists", listId, "items", itemId), {
       name: itemName.trim(),
       checked: false,
-    };
+      createdAt,
+    });
 
     setList({
       ...list,
-      items: [...list.items, newItem],
+      items: [
+        ...(list.items ?? []),
+        {
+          id: itemId,
+          name: itemName.trim(),
+          checked: false,
+          creator: user.uid,
+          created_at: createdAt,
+        },
+      ],
     });
 
-    // Clear item inputs
     setItemName("");
   }
 
@@ -78,7 +109,7 @@ export default function Home() {
     <div className="p-4 max-w-md mx-auto">
       <h1 className="text-xl font-bold mb-2">Lag en ny handleliste</h1>
 
-      <div className="flex gap-2 mb-4">
+      <div className="flex gap-2 mb-2">
         <input
           type="text"
           value={titleInput}
@@ -93,6 +124,18 @@ export default function Home() {
           Lag
         </button>
       </div>
+      {showSharedWith ? (
+        <input
+          type="text"
+          value={sharedInput}
+          onChange={(e) => {
+            setSharedInput(e.target.value);
+            setSharedWith(e.target.value.split(/\s+/).filter(Boolean));
+          }}
+          placeholder="Delt med (e-post, skill med mellomrom)"
+          className="border rounded px-2 py-1 w-full mb-4"
+        />
+      ) : null}
 
       {list && (
         <>
@@ -114,7 +157,7 @@ export default function Home() {
             />
             <div className="flex gap-2">
               <button
-                onClick={handleAddItem}
+                onClick={() => handleAddItem(list.id)}
                 className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700"
               >
                 Legg til
@@ -124,7 +167,7 @@ export default function Home() {
 
           <div>
             <h3 className="font-medium mb-2">Varer:</h3>
-            {list.items.length === 0 ? (
+            {!list.items || list.items.length === 0 ? (
               <p className="text-gray-500">Ingen varer enda.</p>
             ) : (
               <ul className="list-disc pl-5 space-y-1">

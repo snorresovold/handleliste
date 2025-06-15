@@ -11,6 +11,7 @@
   "dependencies": {
     "@react-router/node": "^7.5.3",
     "@react-router/serve": "^7.5.3",
+    "crypto": "^1.0.1",
     "daisyui": "^5.0.43",
     "firebase": "^11.9.1",
     "isbot": "^5.1.27",
@@ -20,11 +21,16 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
+    "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
+    "@esbuild-plugins/node-modules-polyfill": "^0.2.2",
     "@react-router/dev": "^7.5.3",
     "@tailwindcss/vite": "^4.1.10",
     "@types/node": "^20",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
+    "crypto-browserify": "^3.12.1",
+    "rollup-plugin-node-polyfills": "^0.2.1",
+    "stream-browserify": "^3.0.0",
     "tailwindcss": "^4.1.10",
     "typescript": "^5.8.3",
     "vite": "^6.3.3",
