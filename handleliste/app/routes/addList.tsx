@@ -107,6 +107,12 @@ export default function Home() {
 
   return (
     <div className="p-4 max-w-md mx-auto">
+      <button
+        onClick={() => window.history.back()}
+        className="bg-gray-300 text-black px-3 py-1 rounded hover:bg-gray-400 mb-4"
+      >
+        Tilbake
+      </button>
       <h1 className="text-xl font-bold mb-2">Lag en ny handleliste</h1>
 
       <div className="flex gap-2 mb-2">
