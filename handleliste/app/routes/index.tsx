@@ -11,13 +11,11 @@ function Index() {
   const { user, loading } = useAuth();
 
   async function getLists() {
-    if (!user) return; // extra safety
-
     const q = query(
       collection(db, "shoppinglists"),
       or(
-        where("creator", "==", user.uid),
-        where("sharedWith", "array-contains", user.uid)
+        where("creator", "==", user!.uid),
+        where("sharedWith", "array-contains", user!.uid)
       )
     );
 
@@ -26,7 +24,7 @@ function Index() {
       querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
-      })) as unknown as ShoppingList[]
+      })) as ShoppingList[]
     );
   }
 
@@ -40,18 +38,30 @@ function Index() {
     setLists((prev) => prev.filter((list) => list.id !== id));
   }
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
   if (!user) {
     return (
       <div>
         Logg inn for å se handlelistene dine.{" "}
-        <NavLink to="/login">Logg inn</NavLink>{" "}
-        <NavLink to="/register">Registrer deg</NavLink>
+        <NavLink
+          to="/login"
+          className="bg-white text-black px-4 py-2 rounded"
+          end
+        >
+          Logg inn
+        </NavLink>{" "}
+        <NavLink
+          to="/register"
+          className="bg-white text-black px-4 py-2 rounded"
+          end
+        >
+          Registrer deg
+        </NavLink>
       </div>
     );
+  }
+
+  if (loading) {
+    return <div>Loading...</div>;
   }
 
   return (
