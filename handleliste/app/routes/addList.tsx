@@ -21,7 +21,6 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-// Dummy implementation — replace with real email-to-UID logic later
 async function handleEmailToID(emails: string[]): Promise<string[]> {
   let IDs: string[] = [];
   for (const email of emails) {
