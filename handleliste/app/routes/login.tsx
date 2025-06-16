@@ -12,7 +12,7 @@ function Login() {
     e.preventDefault();
 
     if (!email || !password) {
-      alert("Please enter both email and password.");
+      alert("Vår så snill å legg inn både passord og email.");
       return;
     }
 
@@ -22,11 +22,11 @@ function Login() {
         email,
         password
       );
-      console.log("Logged in as:", userCredential.user.email);
+      console.log("logget inn som:", userCredential.user.email);
       navigate("/");
     } catch (error) {
       console.error("Error logging in:", error);
-      alert("Login failed. Please check your credentials.");
+      alert("login feilet, sjekk email og passordet ditt.");
     }
   };
 
@@ -52,7 +52,7 @@ function Login() {
             />
           </div>
           <div>
-            <label className="label">Password</label>
+            <label className="label">Passord</label>
             <input
               type="password"
               name="password"
@@ -63,7 +63,7 @@ function Login() {
             />
           </div>
           <button type="submit" className="btn btn-primary w-full">
-            Log In
+            Logg In
           </button>
         </form>
       </div>
