@@ -50,7 +50,7 @@ function Index() {
           Logg inn
         </NavLink>{" "}
         <NavLink
-          to="/register"
+          to="/registration"
           className="bg-white text-black px-4 py-2 rounded"
           end
         >
