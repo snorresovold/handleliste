@@ -14,7 +14,7 @@ function Registration() {
     e.preventDefault();
 
     if (!email || !password) {
-      alert("Please enter both email and password.");
+      alert("Vær så snill å legg inn både passord og email.");
       return;
     }
 
@@ -41,7 +41,7 @@ function Registration() {
   return (
     <div className="flex justify-center items-center min-h-screen bg-base-200 p-4">
       <div className="card w-96 bg-base-100 shadow-xl p-6">
-        <h2 className="text-2xl font-bold text-center mb-4">Register</h2>
+        <h2 className="text-2xl font-bold text-center mb-4">Registrer</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="label" htmlFor="email">
@@ -60,7 +60,7 @@ function Registration() {
           </div>
           <div>
             <label className="label" htmlFor="password">
-              Password
+              Passord
             </label>
             <input
               id="password"
@@ -75,7 +75,7 @@ function Registration() {
             />
           </div>
           <button type="submit" className="btn btn-primary w-full">
-            Register
+            Registrer
           </button>
         </form>
       </div>
