@@ -34,6 +34,8 @@ function Index() {
     }
   }, [loading, user]);
 
+  // (list) => list.id !== id: For each item in the array, 
+  //if its id is not equal to the id you're trying to remove, it will be included in the new array.
   function handleDelete(id: string) {
     setLists((prev) => prev.filter((list) => list.id !== id));
   }
