@@ -20,7 +20,8 @@ export function meta({}: Route.MetaArgs) {
     { name: "description", content: "velkommen til handleliste appen min!" },
   ];
 }
-
+// ikke effektivt å sende en request for hver email, burde nok heller sende en batch request som finner alle brukere med email i arrayet
+// og deretter mappe emailene til IDer
 async function handleEmailToID(emails: string[]): Promise<string[]> {
   let IDs: string[] = [];
   for (const email of emails) {
